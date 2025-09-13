@@ -1,3 +1,4 @@
+import ChatWindow from './components/ChatWindow'
 import SignUp from './components/Signup'
 
 function App() {
@@ -5,6 +6,7 @@ function App() {
   return (
     <>
       <SignUp/>
+      <ChatWindow/>
     </>
   )
 }
