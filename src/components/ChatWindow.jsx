@@ -1,31 +1,53 @@
 import React, { useState, useRef, useEffect } from "react";
+import axios from "axios";
 
-export default function ChatUI() {
-  const [messages, setMessages] = useState([
-    { id: 1, from: "other", text: "Hey! How are you?", time: "10:00 AM" },
-    { id: 2, from: "me", text: "I’m good, thanks! What about you?", time: "10:02 AM" },
-  ]);
-
+export default function ChatWindow() {
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const chatRef = useRef(null);
 
+  // ✅ Fetch messages from backend when component loads
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:3000/chat", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setMessages(res.data);
+      } catch (err) {
+        console.error("Error fetching messages:", err);
+      }
+    };
+
+    fetchMessages();
+  }, []);
+
+  // ✅ Auto scroll to bottom
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
     }
   }, [messages]);
 
-  const handleSend = () => {
+  // ✅ Send message to backend
+  const handleSend = async () => {
     if (!input.trim()) return;
-    const now = new Date();
-    const newMsg = {
-      id: Date.now(),
-      from: "me",
-      text: input,
-      time: now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-    };
-    setMessages([...messages, newMsg]);
-    setInput("");
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.post(
+        "http://localhost:3000/chat/send",
+        { message: input },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Add new message to state
+      setMessages((prev) => [...prev, res.data.data]);
+      setInput("");
+    } catch (err) {
+      console.error("Error sending message:", err);
+    }
   };
 
   return (
@@ -38,16 +60,24 @@ export default function ChatUI() {
       {/* Messages */}
       <div ref={chatRef} className="flex-1 overflow-y-auto p-4 bg-gray-100">
         {messages.map((msg) => (
-          <div key={msg.id} className={`mb-3 flex ${msg.from === "me" ? "justify-end" : "justify-start"}`}>
+          <div
+            key={msg.id}
+            className={`mb-3 flex ${msg.UserId ? "justify-end" : "justify-start"}`}
+          >
             <div
               className={`max-w-[70%] px-4 py-2 rounded-2xl shadow-md ${
-                msg.from === "me"
+                msg.UserId
                   ? "bg-green-500 text-white rounded-br-none"
                   : "bg-white text-gray-900 rounded-bl-none"
               }`}
             >
-              <div>{msg.text}</div>
-              <div className="text-xs text-right opacity-70">{msg.time}</div>
+              <div>{msg.message || msg.text}</div>
+              <div className="text-xs text-right opacity-70">
+                {new Date(msg.createdAt).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </div>
             </div>
           </div>
         ))}
