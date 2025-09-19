@@ -1,28 +1,52 @@
 import { Link, useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 export default function Navbar() {
   const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem("token"); // ✅ check login state
+  const token = localStorage.getItem("token");
+  const isLoggedIn = !!token;
+
+  let userName = "";
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      userName = decoded.name || ""; // ✅ name from JWT
+    } catch (err) {
+      console.error("JWT decode error:", err);
+    }
+  }
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); // remove JWT
-    navigate("/"); // redirect to signup/login page
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    navigate("/");
   };
 
   return (
     <nav className="flex items-center justify-between bg-blue-600 px-6 py-3 text-white shadow-md">
-      <div className="font-bold text-lg">Group Chat App</div>
-      <div className="flex gap-6">
-         <Link to="/" className="hover:text-gray-200">
+      <div className="font-bold text-lg">Chat App</div>
+      <div className="flex items-center gap-6">
+        <Link to="/" className="hover:text-gray-200">
           Home
         </Link>
-        <Link to="/chat" className="hover:text-gray-200">
-          Chat
-        </Link>
-        {!isLoggedIn && <Link to="/signup" className="hover:text-gray-200">
-          Signup
-        </Link>}
-       
+
+        {isLoggedIn && (
+          <>
+            <Link to="/chat" className="hover:text-gray-200">
+              Group Chat
+            </Link>
+            <Link to="/users" className="hover:text-gray-200">
+              Personal Chat
+            </Link>
+            <span className="italic">Hi, {userName}</span> {/* ✅ show name */}
+          </>
+        )}
+
+        {!isLoggedIn && (
+          <Link to="/signup" className="hover:text-gray-200">
+            Signup
+          </Link>
+        )}
 
         {isLoggedIn && (
           <button
