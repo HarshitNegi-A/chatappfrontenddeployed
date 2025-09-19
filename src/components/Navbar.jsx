@@ -10,7 +10,7 @@ export default function Navbar() {
   if (token) {
     try {
       const decoded = jwtDecode(token);
-      userName = decoded.name || ""; // ✅ name from JWT
+      userName = decoded.name || "";
     } catch (err) {
       console.error("JWT decode error:", err);
     }
@@ -25,29 +25,37 @@ export default function Navbar() {
   return (
     <nav className="flex items-center justify-between bg-blue-600 px-6 py-3 text-white shadow-md">
       <div className="font-bold text-lg">Chat App</div>
+
       <div className="flex items-center gap-6">
+        {/* Always show Home */}
         <Link to="/" className="hover:text-gray-200">
           Home
         </Link>
 
+        {/* Only show these if logged in */}
         {isLoggedIn && (
           <>
             <Link to="/chat" className="hover:text-gray-200">
-              Group Chat
+              Global Chat
             </Link>
             <Link to="/users" className="hover:text-gray-200">
               Personal Chat
             </Link>
-            <span className="italic">Hi, {userName}</span> {/* ✅ show name */}
+            <Link to="/groups" className="hover:text-gray-200">
+              Groups
+            </Link>
+            <span className="italic">Hi, {userName}</span>
           </>
         )}
 
+        {/* Show Signup if not logged in */}
         {!isLoggedIn && (
           <Link to="/signup" className="hover:text-gray-200">
             Signup
           </Link>
         )}
 
+        {/* Logout button */}
         {isLoggedIn && (
           <button
             onClick={handleLogout}
