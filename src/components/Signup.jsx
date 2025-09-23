@@ -12,7 +12,7 @@ const SignUp = () => {
     pass: ''
   })
   const navigate = useNavigate()
-  let url = 'http://localhost:3000/'
+  let url = "https://api.myexpensetracker.info";
 
   const handleChange = (e) => {
     const { id, value } = e.target
