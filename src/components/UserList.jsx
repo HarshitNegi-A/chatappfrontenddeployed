@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 
 export default function UserList() {
   // ✅ Define API base URL
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = "https://chatappbackenddeployed-production.up.railway.app";
 
   const [users, setUsers] = useState([]);
   const token = localStorage.getItem("token");

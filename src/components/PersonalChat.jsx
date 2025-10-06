@@ -6,7 +6,7 @@ import axios from "axios";
 
 export default function PersonalChat() {
   // ✅ Define base URL once
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = "https://chatappbackenddeployed-production.up.railway.app";
 
   const { targetUserId } = useParams();
   const [messages, setMessages] = useState([]);

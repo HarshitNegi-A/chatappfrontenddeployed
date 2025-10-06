@@ -5,7 +5,7 @@ import { jwtDecode } from "jwt-decode";
 
 export default function GroupList() {
   // ✅ Define API base URL once
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = "https://chatappbackenddeployed-production.up.railway.app";
 
   const [groups, setGroups] = useState([]);
   const [groupName, setGroupName] = useState("");

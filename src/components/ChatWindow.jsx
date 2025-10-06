@@ -4,7 +4,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 export default function ChatWindow() {
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = "https://chatappbackenddeployed-production.up.railway.app";
 
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");

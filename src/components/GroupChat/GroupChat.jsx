@@ -5,7 +5,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 
 export default function GroupChat() {
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = "https://chatappbackenddeployed-production.up.railway.app";
 
   const { groupId } = useParams();
   const [messages, setMessages] = useState([]);

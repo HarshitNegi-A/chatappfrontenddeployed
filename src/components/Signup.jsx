@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
   // ✅ Base URL
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = "https://chatappbackenddeployed-production.up.railway.app";
 
   const [login, setLogin] = useState(false);
   const [formData, setFormData] = useState({
