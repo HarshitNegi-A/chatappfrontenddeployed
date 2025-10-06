@@ -5,12 +5,12 @@ import { jwtDecode } from "jwt-decode";
 import axios from "axios";
 
 export default function PersonalChat() {
-  // ✅ Define base URL once
   const BASE_URL = "https://chatappbackenddeployed-production.up.railway.app";
 
   const { targetUserId } = useParams();
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
+  const [targetUser, setTargetUser] = useState(null);
   const chatRef = useRef(null);
   const socketRef = useRef(null);
 
@@ -20,7 +20,23 @@ export default function PersonalChat() {
 
   const roomId = [currentUserId, targetUserId].sort().join("_");
 
-  // ✅ Fetch chat history on mount
+  // ✅ Fetch chat partner info
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await axios.get(`${BASE_URL}/users/${targetUserId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTargetUser(res.data); // { id, name, email }
+      } catch (err) {
+        console.error("Error fetching user info:", err);
+      }
+    };
+
+    fetchUser();
+  }, [targetUserId, token]);
+
+  // ✅ Fetch chat history
   useEffect(() => {
     const fetchHistory = async () => {
       try {
@@ -46,7 +62,9 @@ export default function PersonalChat() {
     });
 
     socket.on("receive_message", (msg) => {
-      setMessages((prev) => [...prev, msg]);
+      if (msg.roomId === roomId) {
+        setMessages((prev) => [...prev, msg]);
+      }
     });
 
     return () => {
@@ -54,7 +72,7 @@ export default function PersonalChat() {
     };
   }, [roomId, token]);
 
-  // ✅ Auto-scroll to bottom when messages update
+  // ✅ Auto-scroll
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight;
@@ -70,12 +88,15 @@ export default function PersonalChat() {
 
   return (
     <div className="flex flex-col h-screen max-w-md mx-auto bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
-      {/* Header */}
-      <div className="bg-green-500 text-white p-4 font-semibold shadow-sm">
-        Chat with <span className="italic">User {targetUserId}</span>
+      {/* ✅ Header */}
+      <div className="bg-green-500 text-white p-4 font-semibold shadow-sm text-center">
+        Chat with{" "}
+        <span className="italic font-medium">
+          {targetUser ? targetUser.name : "Loading..."}
+        </span>
       </div>
 
-      {/* Messages Section */}
+      {/* ✅ Messages */}
       <div
         ref={chatRef}
         className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-3"
@@ -87,19 +108,32 @@ export default function PersonalChat() {
             <div
               key={msg.id || msg.createdAt}
               className={`flex ${
-                msg.UserId === currentUserId
+                msg.user?.id === currentUserId
                   ? "justify-end"
                   : "justify-start"
               }`}
             >
               <div
                 className={`max-w-[75%] px-4 py-2 rounded-2xl shadow-md transition ${
-                  msg.UserId === currentUserId
+                  msg.user?.id === currentUserId
                     ? "bg-green-500 text-white rounded-br-none"
                     : "bg-white text-gray-900 rounded-bl-none border border-gray-100"
                 }`}
               >
+                {/* ✅ Sender Name */}
+                <div
+                  className={`text-xs font-semibold mb-1 ${
+                    msg.user?.id === currentUserId
+                      ? "text-green-100"
+                      : "text-gray-600"
+                  }`}
+                >
+                  {msg.user?.name || "Unknown"}
+                </div>
+
+                {/* ✅ Message */}
                 <div>{msg.message}</div>
+
                 <div className="text-xs text-right opacity-70 mt-1">
                   {new Date(msg.createdAt).toLocaleTimeString([], {
                     hour: "2-digit",
@@ -112,7 +146,7 @@ export default function PersonalChat() {
         )}
       </div>
 
-      {/* Input Bar */}
+      {/* ✅ Input Bar */}
       <div className="flex items-center p-3 border-t bg-white">
         <input
           type="text"
