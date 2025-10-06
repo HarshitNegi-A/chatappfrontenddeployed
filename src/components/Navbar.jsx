@@ -23,47 +23,73 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="flex items-center justify-between bg-blue-600 px-6 py-3 text-white shadow-md">
-      <div className="font-bold text-lg">Chat App</div>
+    <nav className="bg-green-600 text-white px-6 py-3 shadow-lg sticky top-0 z-50">
+      <div className="flex items-center justify-between max-w-6xl mx-auto">
+        {/* ✅ Brand */}
+        <div
+          onClick={() => navigate("/")}
+          className="font-bold text-xl cursor-pointer hover:text-green-200 transition"
+        >
+          Chat App 💬
+        </div>
 
-      <div className="flex items-center gap-6">
-        {/* Always show Home */}
-        <Link to="/" className="hover:text-gray-200">
-          Home
-        </Link>
-
-        {/* Only show these if logged in */}
-        {isLoggedIn && (
-          <>
-            <Link to="/chat" className="hover:text-gray-200">
-              Global Chat
-            </Link>
-            <Link to="/users" className="hover:text-gray-200">
-              Personal Chat
-            </Link>
-            <Link to="/groups" className="hover:text-gray-200">
-              Groups
-            </Link>
-            <span className="italic">Hi, {userName}</span>
-          </>
-        )}
-
-        {/* Show Signup if not logged in */}
-        {!isLoggedIn && (
-          <Link to="/signup" className="hover:text-gray-200">
-            Signup
-          </Link>
-        )}
-
-        {/* Logout button */}
-        {isLoggedIn && (
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 px-3 py-1 rounded hover:bg-red-600"
+        {/* ✅ Links */}
+        <div className="flex items-center gap-6 text-sm font-medium">
+          {/* Always show Home */}
+          <Link
+            to="/"
+            className="hover:text-green-200 transition"
           >
-            Logout
-          </button>
-        )}
+            Home
+          </Link>
+
+          {/* Show these only when logged in */}
+          {isLoggedIn && (
+            <>
+              <Link
+                to="/chat"
+                className="hover:text-green-200 transition"
+              >
+                Global Chat
+              </Link>
+              <Link
+                to="/users"
+                className="hover:text-green-200 transition"
+              >
+                Personal Chat
+              </Link>
+              <Link
+                to="/groups"
+                className="hover:text-green-200 transition"
+              >
+                Groups
+              </Link>
+              <span className="italic text-sm text-green-100">
+                Hi, {userName}
+              </span>
+            </>
+          )}
+
+          {/* Show Signup if not logged in */}
+          {!isLoggedIn && (
+            <Link
+              to="/signup"
+              className="hover:text-green-200 transition"
+            >
+              Signup
+            </Link>
+          )}
+
+          {/* Logout Button */}
+          {isLoggedIn && (
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded-lg text-sm font-semibold transition"
+            >
+              Logout
+            </button>
+          )}
+        </div>
       </div>
     </nav>
   );
